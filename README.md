@@ -15,10 +15,13 @@ O produto de software a ser desenvolvido é um aplicativo interativo para tablet
 Com uma interface amigável e acessível, o aplicativo permitirá aos idosos exercitar suas habilidades cognitivas e físicas de maneira divertida e interativa, enquanto também atende a interação social entre os residentes.
 
 Identifique os clientes, usuários e demais envolvidos/impactados com o produto;
+
 Os principais envolvidos e impactados pelo produto de software incluem os idosos residentes em casas de repouso, que serão os usuários diretos do aplicativo. De maneira indireta, tambeém, os cuidadores, profissionais de saúde e familiares dos idosos também serão impactados, pois o aplicativo fornecerá uma ferramenta adicional para melhorar o bem-estar e a qualidade de vida dos idosos.
 
 Descreva, em linhas gerais, quais as principais etapas necessárias para construir este produto;
+
 Ocorrerá a etapa de engenharia de requisitos, na qual será feita todo o levantamento  a organização e identificação dos principais jogos e ferramentas que poderão ser usadas no desenvolvimento.Em seguida, o design de interface do usuário (UI) e experiência do usuário (UX), garantindo que o aplicativo seja acessível, intuitivo e atraente para o público-alvo. Por fim, a etapa de desenvolvimento incluirá a criação dos jogos, a programação das interações e a implementação dos recursos de personalização.
 
 Identifique os principais critérios de qualidade para o produto;
+
 O aplicativo deve ser projetado com uma interface amigável, adaptada às capacidades dos idosos, com recursos de acessibilidade, como fontes legíveis, cores contrastantes e opções de áudio. A usabilidade é crucial, exigindo que os jogos e funcionalidades sejam intuitivos e de fácil compreensão, permitindo que os usuários se engajem sem dificuldades.
