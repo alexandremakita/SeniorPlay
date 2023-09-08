@@ -10,6 +10,7 @@ A razão ou justificativa para esta demanda;
 A demanda por um aplicativo lúdico para idosos em casas de repouso é justificada pela necessidade urgente de proporcionar uma abordagem mais abrangente e eficaz para o cuidado desses indivíduos. As limitações físicas e a falta de interação social muitas vezes levam à solidão e à deterioração cognitiva, resultando em uma qualidade de vida comprometida.
 
 A descrição sucinta do produto de software que será produzido;
+
 O produto de software a ser desenvolvido é um aplicativo interativo para tablets, projetado especificamente para atender às necessidades dos idosos em casas de repouso. O aplicativo oferecerá uma variedade de jogos clássicos e desafios mentais. Além disso, incluirá recursos de personalização para adaptar os jogos às preferências individuais e capacidades dos usuários. 
 Com uma interface amigável e acessível, o aplicativo permitirá aos idosos exercitar suas habilidades cognitivas e físicas de maneira divertida e interativa, enquanto também atende a interação social entre os residentes.
 
