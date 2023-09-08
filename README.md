@@ -4,9 +4,11 @@ SeniorPlay: Jogos para idosos em casas de repouso
 Descrição do Projeto:
 
 O problema ou oportunidade percebida;
+
 A crescente população idosa em casas de repouso enfrenta o desafio da solidão, inatividade e falta de estímulo mental, o que pode impactar negativamente sua qualidade de vida. Nesse contexto, o desenvolvimento de um aplicativo lúdico oferece uma oportunidade valiosa para abordar essas questões de maneira inovadora. O aplicativo não apenas proporcionará entretenimento e exercícios cognitivos, mas também criará uma conexão significativa entre os idosos, promovendo uma sensação de comunidade, mantendo-os ativos e contribuindo para seu bem-estar geral.
 
 A razão ou justificativa para esta demanda;
+
 A demanda por um aplicativo lúdico para idosos em casas de repouso é justificada pela necessidade urgente de proporcionar uma abordagem mais abrangente e eficaz para o cuidado desses indivíduos. As limitações físicas e a falta de interação social muitas vezes levam à solidão e à deterioração cognitiva, resultando em uma qualidade de vida comprometida.
 
 A descrição sucinta do produto de software que será produzido;
