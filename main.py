@@ -1,13 +1,21 @@
 import pygame
 import random
 import string
+import json  # Adicionado para salvar e carregar dados
 
 pygame.init()
+fonte_grande = pygame.font.Font(None, 48)
+
+retangulo_voltar = pygame.Rect(10, 10, 110, 40)
+retangulo_adicionar = pygame.Rect(600, 100, 200, 50)
+retangulo_confirmar = pygame.Rect(600, 160, 200, 50)
 
 # Defina suas listas de palavras aqui
 palavras_facil = ["girafa", "banana", "carro", "sorvete", "abacaxi", "macaco", "biciclo", "cadeira", "computador", "elefante", "janela", "morango", "parafuso", "teclado", "pincel", "pessoa", "relogio", "violino", "xicara"]
 palavras_medio = ["aventura", "computador", "eletronica", "monitor", "bicicleta", "resistencia", "televisao", "apartamento", "pneumatico", "aprendizado", "frutas", "estudante", "elefantes", "aniversario", "piscina", "cachorro", "documentos", "luminaria", "escritorio", "telescopio"]
 palavras_dificil = ["comunicaçcao", "responsavel", "inteligencia", "independente", "planejamento", "empreendedor", "sustentavel", "organizacao", "estrategico", "interessante", "extraordinario"]
+
+usuarios = []
 def mostrar_menu_touch(tela):
     fonte = pygame.font.Font(None, 48)
     cor_texto = (255, 255, 255)
@@ -206,10 +214,51 @@ def jogar():
 
     if vidas == 0:
         print(f"Fim de jogo. A palavra era: {palavra}")
-    
+        usuario_partida = input("Digite o nome do usuário para atualizar o histórico: ")
+        salvar_estatisticas(False, nivel, usuario_partida)
+    else:
+        usuario_partida = input("Digite o nome do usuário para atualizar o histórico: ")
+        salvar_estatisticas(True, nivel, usuario_partida)
+
     jogar_novamente = menu_confirmacao()
     if not jogar_novamente:
-        return
+        main()
+
+def salvar_estatisticas(vitoria, nivel, usuario_partida):
+    usuarios = carregar_usuarios()
+
+    for usuario in usuarios:
+        if usuario["nome"] == usuario_partida:
+            usuario["vitorias"] += 1 if vitoria else 0
+
+    salvar_usuarios(usuarios)
+
+def carregar_estatisticas(usuario):
+    try:
+        with open(f"estatisticas_{usuario}.json", "r") as file:
+            estatisticas = json.load(file)
+    except FileNotFoundError:
+        estatisticas = {}
+    return estatisticas
+
+
+def salvar_estatisticas_usuario(usuario, estatisticas):
+    with open(f"estatisticas_{usuario}.json", "w") as file:
+        json.dump(estatisticas, file)
+
+
+def mostrar_estatisticas(usuario):
+    estatisticas = carregar_estatisticas(usuario)
+    print("Estatísticas:")
+    for nivel, dados in estatisticas.items():
+        jogos_jogados = dados["jogos_jogados"]
+        vitorias = dados["vitorias"]
+        porcentagem_vitoria = (vitorias / jogos_jogados) * 100 if jogos_jogados > 0 else 0
+        print(f"Nível {nivel}: Jogos Jogados: {jogos_jogados}, Vitórias: {vitorias}, Porcentagem de Vitória: {porcentagem_vitoria:.2f}%")
+
+
+
+
 
 def mostrar_menu_confirmacao(tela):
     fonte = pygame.font.Font(None, 48)
@@ -230,14 +279,15 @@ def mostrar_menu_confirmacao(tela):
 
     return retangulo_sim, retangulo_nao
 
+
 def menu_confirmacao():
     tela = pygame.display.set_mode((800, 600))
-    
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                return
+                return False
 
             # Verifique eventos de toque
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -247,11 +297,212 @@ def menu_confirmacao():
                 elif retangulo_nao.collidepoint(x, y):
                     return False  # Não jogar novamente
 
+        tela.fill((0, 0, 0))
+        retangulo_sim, retangulo_nao = mostrar_menu_confirmacao(tela)
+        pygame.display.flip()
+
+def mostrar_menu_touch(tela):
+    fonte = pygame.font.Font(None, 48)
+    cor_texto = (255, 255, 255)
+    
+    # Desenhe os retângulos clicáveis para as opções "Jogar", "Usuários" e "Sair"
+    retangulo_jogar = pygame.Rect(300, 200, 200, 50)
+    pygame.draw.rect(tela, (0, 255, 0), retangulo_jogar)
+    texto_jogar = fonte.render("Jogar", True, cor_texto)
+    tela.blit(texto_jogar, (325, 210))
+
+    retangulo_usuarios = pygame.Rect(300, 250, 200, 50)
+    pygame.draw.rect(tela, (0, 0, 255), retangulo_usuarios)
+    texto_usuarios = fonte.render("Usuários", True, cor_texto)
+    tela.blit(texto_usuarios, (310, 260))
+
+    retangulo_sair = pygame.Rect(300, 300, 200, 50)
+    pygame.draw.rect(tela, (255, 0, 0), retangulo_sair)
+    texto_sair = fonte.render("Sair", True, cor_texto)
+    tela.blit(texto_sair, (335, 310))
+
+    return retangulo_jogar, retangulo_usuarios, retangulo_sair
+
+# Nova função para mostrar a lista de botões de usuários
+def mostrar_menu_usuarios(tela, adicionando_usuario, nome_usuario, input_rect, usuarios, fonte, cor_texto):
+    fonte = pygame.font.Font(None, 48)
+    cor_texto = (255, 255, 255)
+
+    # Adicione a linha abaixo para criar os botões de usuários
+    botoes_usuarios = criar_botoes_usuarios(usuarios, fonte, cor_texto)
+
+    # Sempre desenhe o botão "Voltar"
+    retangulo_voltar = pygame.Rect(50, 10, 110, 40)
+    pygame.draw.rect(tela, (255, 0, 0), retangulo_voltar)
+    texto_voltar = fonte.render("Voltar", True, cor_texto)
+    tela.blit(texto_voltar, (60, 20))
+
+    retangulo_adicionar = pygame.Rect(600, 100, 200, 50)
+    pygame.draw.rect(tela, (0, 255, 0), retangulo_adicionar)
+    texto_adicionar = fonte.render("Adicionar", True, cor_texto)
+    tela.blit(texto_adicionar, (600, 110))
+
+    if adicionando_usuario:
+        # Desenhe a barra de inserção e o botão de confirmar apenas quando estiver adicionando um usuário
+        pygame.draw.rect(tela, (255, 255, 255), input_rect, 2)
+        texto_input = fonte.render(nome_usuario, True, cor_texto)
+        tela.blit(texto_input, (input_rect.x + 5, input_rect.y + 5))
+
         
+
+        # Adicione um retângulo e texto para o botão "Confirmar"
+        retangulo_confirmar = pygame.Rect(600, 160, 200, 50)
+        pygame.draw.rect(tela, (255, 0, 0), retangulo_confirmar)
+        texto_confirmar = fonte.render("Confirmar", True, cor_texto)
+        tela.blit(texto_confirmar, (600, 170))
+
+    mostrar_usuarios(tela, botoes_usuarios, fonte, cor_texto)
+    return botoes_usuarios
+
+
+
+def tela_usuarios(usuarios):
+    tela = pygame.display.set_mode((800, 600))
+    fonte = pygame.font.Font(None, 36)
+    cor_texto = (255, 255, 255)
+
+    # Variáveis para o campo de texto e botão "Adicionar"
+    input_rect = pygame.Rect(50, 50, 200, 32)
+    nome_usuario = ""
+    adicionando_usuario = False
+
+    # Adicione a linha abaixo para criar os botões de usuários
+    botoes_usuarios = criar_botoes_usuarios(usuarios, fonte, cor_texto)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+
+            # Verifique eventos de toque
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                if retangulo_voltar.collidepoint(x, y):
+                    return  # Volta para o menu anterior
+                elif not adicionando_usuario and retangulo_adicionar.collidepoint(x, y):
+                    adicionando_usuario = True
+                elif adicionando_usuario and retangulo_confirmar.collidepoint(x, y):
+                    # Adiciona o novo usuário
+                    novo_usuario = {"nome": nome_usuario, "vitorias": 0}
+                    usuarios.append(novo_usuario)
+                    nome_usuario = ""
+                    adicionando_usuario = False
+                    salvar_usuarios(usuarios)  # Salva a lista atualizada no arquivo JSON
+                    pygame.display.flip()  # Atualiza a tela imediatamente
+                else:
+                    # Verifica se algum botão de usuário foi clicado
+                    for retangulo, usuario_info in botoes_usuarios:
+                      if retangulo.collidepoint(x, y):
+                        print(f"Usuário {usuario_info['nome']} clicado!")
+                        retangulo_detalhes = mostrar_detalhes_usuario(tela, usuario_info, fonte_grande, cor_texto)  # Nova função para mostrar detalhes
+
+            if adicionando_usuario and event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    # Adiciona o novo usuário
+                    novo_usuario = {"nome": nome_usuario, "vitorias": 0}
+                    usuarios.append(novo_usuario)
+                    nome_usuario = ""
+                    adicionando_usuario = False
+                    salvar_usuarios(usuarios)  # Salva a lista atualizada no arquivo JSON
+                    pygame.display.flip()  # Atualiza a tela imediatamente
+                elif event.key == pygame.K_BACKSPACE:
+                    nome_usuario = nome_usuario[:-1]
+                else:
+                    nome_usuario += event.unicode
+
+        tela.fill((0, 0, 0))
+        botoes_usuarios = mostrar_menu_usuarios(tela, adicionando_usuario, nome_usuario, input_rect, usuarios, fonte, cor_texto)
+        mostrar_usuarios(tela, botoes_usuarios, fonte, cor_texto)
+
+        pygame.display.flip()
+
+        
+
+
+
+
+# Adicione a linha abaixo para criar os botões de usuários
+
+def retangulo_voltar_menu_inicial(tela, fonte, cor_texto):
+    retangulo_voltar = pygame.Rect(50, 10, 110, 40)
+    pygame.draw.rect(tela, (255, 0, 0), retangulo_voltar)
+    texto_voltar = fonte.render("Voltar", True, cor_texto)
+    tela.blit(texto_voltar, (60, 20))
+    return retangulo_voltar
+
+def mostrar_detalhes_usuario(tela, usuario_info, fonte_grande, cor_texto):
+    tela.fill((0, 0, 0))
+    texto_detalhes = fonte_grande.render(f"Detalhes do Usuário {usuario_info['nome']}", True, cor_texto)
+    tela.blit(texto_detalhes, (150, 50))
+
+    # Exibe todas as informações do usuário
+    texto_nome = fonte_grande.render(f"Nome: {usuario_info['nome']}", True, cor_texto)
+    tela.blit(texto_nome, (150, 150))
+
+    texto_vitorias = fonte_grande.render(f"Vitórias: {usuario_info['vitorias']}", True, cor_texto)
+    tela.blit(texto_vitorias, (150, 200))
+
+    pygame.display.flip()
+
+    return retangulo_voltar_menu_inicial(tela, fonte_grande, cor_texto)  # Nova função para botão "Voltar"
+
+#
+
+def criar_botoes_usuarios(lista_usuarios, fonte, cor_texto):
+    botoes_usuarios = []
+    for i, usuario in enumerate(lista_usuarios):
+        retangulo_usuario = pygame.Rect(50, 200 + i * 40, 200, 30)
+        botoes_usuarios.append((retangulo_usuario, usuario))
+    return botoes_usuarios
+
+# Atualize a função mostrar_usuarios
+def mostrar_usuarios(tela, botoes_usuarios, fonte, cor_texto):
+
+    for retangulo, usuario_info in botoes_usuarios:
+        pygame.draw.rect(tela, (0, 255, 0), retangulo)
+        texto_usuario = fonte.render(usuario_info['nome'], True, cor_texto)
+        tela.blit(texto_usuario, (retangulo.x + 10, retangulo.y + 5))
+
+    # Adicione o botão "Detalhes"
+    retangulo_detalhes = pygame.Rect(600, 400, 150, 50)
+    pygame.draw.rect(tela, (0, 0, 255), retangulo_detalhes)
+    texto_detalhes = fonte.render("Detalhes", True, cor_texto)
+    tela.blit(texto_detalhes, (620, 410))
+
+    return retangulo_detalhes
+
+
+def carregar_usuarios():
+    try:
+        with open("usuarios.json", "r") as file:
+            usuarios = json.load(file)
+        return usuarios
+    except FileNotFoundError:
+        return []
+
+def salvar_usuarios(usuarios):
+    with open("usuarios.json", "w") as file:
+        json.dump(usuarios, file, indent=2)
+
+
 def main():
     pygame.init()
     tela = pygame.display.set_mode((800, 600))
     
+    # Declare as variáveis de retângulo
+    retangulo_jogar = None
+    retangulo_usuarios = None
+    retangulo_sair = None
+
+    # Carrega automaticamente os usuários do arquivo JSON
+    usuarios = carregar_usuarios()
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -265,12 +516,14 @@ def main():
                     if not jogar():
                         pygame.quit()
                         return  # O jogador escolheu sair após a partida
+                elif retangulo_usuarios.collidepoint(x, y):
+                    tela_usuarios(usuarios)  # Mostra a tela de listagem de usuários
                 elif retangulo_sair.collidepoint(x, y):
                     pygame.quit()
                     return
 
         tela.fill((0, 0, 0))
-        retangulo_jogar, retangulo_sair = mostrar_menu_touch(tela)
+        retangulo_jogar, retangulo_usuarios, retangulo_sair = mostrar_menu_touch(tela)
         pygame.display.flip()
 
 if __name__ == "__main__":
