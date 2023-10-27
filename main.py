@@ -213,16 +213,77 @@ def jogar():
             break
 
     if vidas == 0:
-        print(f"Fim de jogo. A palavra era: {palavra}")
-        usuario_partida = input("Digite o nome do usuário para atualizar o histórico: ")
-        salvar_estatisticas(False, nivel, usuario_partida)
-    else:
-        usuario_partida = input("Digite o nome do usuário para atualizar o histórico: ")
-        salvar_estatisticas(True, nivel, usuario_partida)
+      print(f"Fim de jogo. A palavra era: {palavra}")
+      
 
-    jogar_novamente = menu_confirmacao()
-    if not jogar_novamente:
-        main()
+      tela_nome_usuario = pygame.display.set_mode((800, 600))
+      fonte = pygame.font.Font(None, 36)
+      cor_texto = (255, 255, 255)
+      input_rect = pygame.Rect(300, 250, 200, 32)
+      nome_usuario = ""
+
+      while True:
+          for event in pygame.event.get():
+              if event.type == pygame.QUIT:
+                  pygame.quit()
+                  return
+
+              if event.type == pygame.KEYDOWN:
+                  if event.key == pygame.K_RETURN:
+                      usuario_partida = nome_usuario
+                      salvar_estatisticas(False, nivel, usuario_partida)
+                      jogar_novamente = menu_confirmacao()
+                      if not jogar_novamente:
+                        main()
+                  elif event.key == pygame.K_BACKSPACE:
+                      nome_usuario = nome_usuario[:-1]
+                  elif event.unicode and event.unicode.isprintable():        
+                    nome_usuario += event.unicode
+
+          tela_nome_usuario.fill((0, 0, 0))
+          inserir_nome_usuario(tela_nome_usuario, fonte, cor_texto, input_rect, nome_usuario)
+          pygame.display.flip()
+
+      
+    else:
+      # Comentando a linha abaixo, já que agora vamos inserir o nome do usuário na tela
+      # usuario_partida = input("Digite o nome do usuário para atualizar o histórico: ")
+
+      tela_nome_usuario = pygame.display.set_mode((800, 600))
+      fonte = pygame.font.Font(None, 36)
+      cor_texto = (255, 255, 255)
+      input_rect = pygame.Rect(300, 250, 200, 32)
+      nome_usuario = ""
+
+      while True:
+          for event in pygame.event.get():
+              if event.type == pygame.QUIT:
+                  pygame.quit()
+                  return
+
+              if event.type == pygame.KEYDOWN:
+                  if event.key == pygame.K_RETURN:
+                    usuario_partida = nome_usuario
+                    salvar_estatisticas(True, nivel, usuario_partida)
+                    jogar_novamente = menu_confirmacao()
+                    if not jogar_novamente:
+                      main()
+                  elif event.key == pygame.K_BACKSPACE:
+                      nome_usuario = nome_usuario[:-1]
+                  elif event.unicode and event.unicode.isprintable():
+                      nome_usuario += event.unicode
+
+          tela_nome_usuario.fill((0, 0, 0))
+          inserir_nome_usuario(tela_nome_usuario, fonte, cor_texto, input_rect, nome_usuario)
+          pygame.display.flip()
+
+
+    
+def inserir_nome_usuario(tela, fonte, cor_texto, input_rect, nome_usuario):
+  pygame.draw.rect(tela, (255, 255, 255), input_rect, 2)
+  texto_input = fonte.render(nome_usuario, True, cor_texto)
+  tela.blit(texto_input, (input_rect.x + 5, input_rect.y + 5))
+
 
 def salvar_estatisticas(vitoria, nivel, usuario_partida):
     usuarios = carregar_usuarios()
@@ -235,7 +296,7 @@ def salvar_estatisticas(vitoria, nivel, usuario_partida):
 
 def carregar_estatisticas(usuario):
     try:
-        with open(f"estatisticas_{usuario}.json", "r") as file:
+        with open(f"usuarios.json", "r") as file:
             estatisticas = json.load(file)
     except FileNotFoundError:
         estatisticas = {}
@@ -281,25 +342,29 @@ def mostrar_menu_confirmacao(tela):
 
 
 def menu_confirmacao():
-    tela = pygame.display.set_mode((800, 600))
+        tela = pygame.display.set_mode((800, 600))
 
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return False
+        retangulo_sim = None
+        retangulo_nao = None
 
-            # Verifique eventos de toque
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = event.pos
-                if retangulo_sim.collidepoint(x, y):
-                    return True  # Jogar novamente
-                elif retangulo_nao.collidepoint(x, y):
-                    return False  # Não jogar novamente
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return False
 
-        tela.fill((0, 0, 0))
-        retangulo_sim, retangulo_nao = mostrar_menu_confirmacao(tela)
-        pygame.display.flip()
+                # Verifique eventos de toque
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    x, y = event.pos
+                    if retangulo_sim and retangulo_sim.collidepoint(x, y):
+                        return True  # Jogar novamente
+                    elif retangulo_nao and retangulo_nao.collidepoint(x, y):
+                        return False  # Não jogar novamente
+
+            tela.fill((0, 0, 0))
+            retangulo_sim, retangulo_nao = mostrar_menu_confirmacao(tela)
+            pygame.display.flip()
+
 
 def mostrar_menu_touch(tela):
     fonte = pygame.font.Font(None, 48)
