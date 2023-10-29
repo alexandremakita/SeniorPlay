@@ -183,7 +183,7 @@ def jogar():
                     coluna = (x - 150) // 40
                     linha = (y - 300) // 40
                     letra_tentativa = teclado[linha][coluna].lower()
-
+                    #print(letra_tentativa)
                     if letra_tentativa in letras_incorretas or letra_tentativa in letras_corretas:
                         print("Você já tentou esta letra antes.")
                     else:
@@ -221,6 +221,7 @@ def jogar():
       cor_texto = (255, 255, 255)
       input_rect = pygame.Rect(300, 250, 200, 32)
       nome_usuario = ""
+      teclado = organizar_teclado()
 
       while True:
           for event in pygame.event.get():
@@ -233,15 +234,27 @@ def jogar():
                       usuario_partida = nome_usuario
                       salvar_estatisticas(False, nivel, usuario_partida)
                       jogar_novamente = menu_confirmacao()
-                      if not jogar_novamente:
+                      if jogar_novamente:
+                        jogar()
+                      else:
                         main()
                   elif event.key == pygame.K_BACKSPACE:
                       nome_usuario = nome_usuario[:-1]
                   elif event.unicode and event.unicode.isprintable():        
                     nome_usuario += event.unicode
+              if event.type == pygame.MOUSEBUTTONDOWN:
+                      x, y = event.pos
+                      if 150 <= x <= 470 and 300 <= y <= 540:  # Verifica se o toque ocorreu na área do teclado
+                          coluna = (x - 150) // 40
+                          linha = (y - 300) // 40
+                          letra_tentativa = teclado[linha][coluna].lower()
+                          print(letra_tentativa)
+                          nome_usuario+=letra_tentativa
+                      
 
           tela_nome_usuario.fill((0, 0, 0))
           inserir_nome_usuario(tela_nome_usuario, fonte, cor_texto, input_rect, nome_usuario)
+          desenhar_teclado(tela, teclado,[],[])
           pygame.display.flip()
 
       
@@ -266,15 +279,26 @@ def jogar():
                     usuario_partida = nome_usuario
                     salvar_estatisticas(True, nivel, usuario_partida)
                     jogar_novamente = menu_confirmacao()
-                    if not jogar_novamente:
+                    if jogar_novamente:
+                      jogar()
+                    else:
                       main()
                   elif event.key == pygame.K_BACKSPACE:
                       nome_usuario = nome_usuario[:-1]
                   elif event.unicode and event.unicode.isprintable():
                       nome_usuario += event.unicode
-
+              if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                if 150 <= x <= 470 and 300 <= y <= 540:  # Verifica se o toque ocorreu na área do teclado
+                    coluna = (x - 150) // 40
+                    linha = (y - 300) // 40
+                    letra_tentativa = teclado[linha][coluna].lower()
+                    print(letra_tentativa)
+                    nome_usuario+=letra_tentativa
           tela_nome_usuario.fill((0, 0, 0))
           inserir_nome_usuario(tela_nome_usuario, fonte, cor_texto, input_rect, nome_usuario)
+          desenhar_teclado(tela, teclado,[],[])
+
           pygame.display.flip()
 
 
@@ -291,6 +315,7 @@ def salvar_estatisticas(vitoria, nivel, usuario_partida):
     for usuario in usuarios:
         if usuario["nome"] == usuario_partida:
             usuario["vitorias"] += 1 if vitoria else 0
+            usuario["partidas"] += 1
 
     salvar_usuarios(usuarios)
 
@@ -308,14 +333,7 @@ def salvar_estatisticas_usuario(usuario, estatisticas):
         json.dump(estatisticas, file)
 
 
-def mostrar_estatisticas(usuario):
-    estatisticas = carregar_estatisticas(usuario)
-    print("Estatísticas:")
-    for nivel, dados in estatisticas.items():
-        jogos_jogados = dados["jogos_jogados"]
-        vitorias = dados["vitorias"]
-        porcentagem_vitoria = (vitorias / jogos_jogados) * 100 if jogos_jogados > 0 else 0
-        print(f"Nível {nivel}: Jogos Jogados: {jogos_jogados}, Vitórias: {vitorias}, Porcentagem de Vitória: {porcentagem_vitoria:.2f}%")
+
 
 
 
@@ -470,7 +488,7 @@ def tela_usuarios(usuarios):
             if adicionando_usuario and event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     # Adiciona o novo usuário
-                    novo_usuario = {"nome": nome_usuario, "vitorias": 0}
+                    novo_usuario = {"nome": nome_usuario, "vitorias": 0, "partidas":0}
                     usuarios.append(novo_usuario)
                     nome_usuario = ""
                     adicionando_usuario = False
@@ -512,6 +530,8 @@ def mostrar_detalhes_usuario(tela, usuario_info, fonte_grande, cor_texto):
 
     texto_vitorias = fonte_grande.render(f"Vitórias: {usuario_info['vitorias']}", True, cor_texto)
     tela.blit(texto_vitorias, (150, 200))
+    texto_partidas = fonte_grande.render(f"Partidas: {usuario_info['partidas']}", True, cor_texto)
+    tela.blit(texto_vitorias, (150, 250))
 
     pygame.display.flip()
 
@@ -553,7 +573,7 @@ def carregar_usuarios():
 
 def salvar_usuarios(usuarios):
     with open("usuarios.json", "w") as file:
-        json.dump(usuarios, file, indent=2)
+        json.dump(usuarios, file, indent=3)
 
 
 def main():
