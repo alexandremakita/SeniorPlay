@@ -1,6 +1,8 @@
 # Updates
 - Outubro 11: Adicionada a função de criar usuário
 - Outubro 26: Correção de bug após finalizar partida
+- Outubro 27: Adicionado teclado após finalizar partida
+
 
 # SeniorPlay
 SeniorPlay: Jogos para idosos em casas de repouso
