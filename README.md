@@ -1,7 +1,7 @@
 # Updates
 - Outubro 11: Adicionada a função de criar usuário
 - Outubro 26: Correção de bug após finalizar partida
-- Outubro 27: Adicionado teclado após finalizar partida
+- Outubro 27: Adicionado teclado após finalizar partida e pasta de usuarios
 
 
 # SeniorPlay
